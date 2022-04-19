@@ -128,22 +128,22 @@ class Menu
 
   def stations
     puts 'Список станций:'
-    @stations.each_index { |index| puts "#{index + 1}. #{@stations[index].station_name}" }
+    @stations.each.with_index(1) { |station, index| puts "#{index}. #{station.station_name}" }
   end
 
   def trains
     puts 'Список поездов:'
-    @trains.each_index { |index| puts "#{index + 1}. #{@trains[index].number} #{@trains[index].carriages}" }
+    @trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number} #{train.carriages}" }
   end
 
   def carriages
     puts 'Список вагонов:'
-    @carriages.each_index { |index| puts "#{index + 1}. #{@carriages[index].type}" }
+    @carriages.each.with_index(1) { |carriage, index| puts "#{index}. #{carriage.type}" }
   end
 
   def routes
     puts 'Список маршрутов:'
-    @routes.each_index { |index| puts "#{index + 1}. #{@routes[index].stations}" }
+    @routes.each.with_index(1) { |route, index| puts "#{index}. #{route.stations}" }
   end
 
   def choose_station
