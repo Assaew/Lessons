@@ -131,6 +131,16 @@ class Menu
     end
   end
 
+  def create_route
+    puts 'Начальная станция маршрута'
+    start_station = input_station
+    puts 'Конечная станция маршрута'
+    last_station = input_station
+    wrong_input if start_station == last_station
+    @routes << Route.new(start_station, last_station)
+    routes
+  end
+
   def stations
     puts 'Список станций:'
     @stations.each.with_index(1) { |station, index| puts "#{index}. #{station.name}" }
@@ -138,7 +148,7 @@ class Menu
 
   def trains
     puts 'Список поездов:'
-    @trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number} #{train.carriages}" }
+    @trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number}-#{train.type} (#{train.carriages.size})" }
   end
 
   def carriages
@@ -148,23 +158,23 @@ class Menu
 
   def routes
     puts 'Список маршрутов:'
-    @routes.each.with_index(1) { |route, index| puts "#{index}. #{route.stations}" }
+    @routes.each.with_index(1) do |route, index|
+      puts "#{index}. #{stations_output(route).join(', ')}"
+    end
   end
 
   def trains_on_station
     station = input_station
-    # проверить работает ли следующая строчка
-    puts station.trains.each(&:number)
+    puts "Поезда на станции #{station.name}:"
+    station.trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number}" }
   end
 
-  def create_route
-    puts 'Начальная станция маршрута'
-    start_station = input_station
-    puts 'Конечная станция маршрута'
-    last_station = input_station
-    wrong_input if start_station == last_station
-    @routes << Route.new(start_station, last_station)
-    routes
+  def stations_output(route)
+    stations_array = []
+    route.stations.each do |station|
+      stations_array << station.name
+    end
+    stations_array
   end
 
   def change_station_in_route
@@ -182,13 +192,14 @@ class Menu
     else
       wrong_input
     end
+    routes
   end
 
   def assign_route
     train = input_train
     route = input_route
     train.route = route
-    puts "Поезд #{train.number} находится на маршруте #{route.stations.each { |station| puts station.name }}"
+    puts "Поезд #{train.number} находится на маршруте #{stations_output(route).join(', ')}"
   end
 
   def input_train
@@ -254,6 +265,7 @@ class Menu
     else
       wrong_input
     end
+    trains
   end
 end
 
