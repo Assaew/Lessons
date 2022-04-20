@@ -18,4 +18,8 @@ class Route
   def stations
     [@start_station, @middle_stations, @last_station].flatten
   end
+
+  def show
+    puts (stations.each { |station| puts station.name }).to_s
+  end
 end

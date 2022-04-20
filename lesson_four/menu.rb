@@ -44,7 +44,7 @@ class Menu
       when '3'
         create_train
       when '4'
-        choose_station
+        trains_on_station
       when '5'
         create_route
       when '6'
@@ -73,6 +73,11 @@ class Menu
   end
 
   private
+
+  def wrong_input
+    puts 'Вы ввели некорректное значение.'
+    menu
+  end
 
   def create_station
     loop do
@@ -128,7 +133,7 @@ class Menu
 
   def stations
     puts 'Список станций:'
-    @stations.each.with_index(1) { |station, index| puts "#{index}. #{station.station_name}" }
+    @stations.each.with_index(1) { |station, index| puts "#{index}. #{station.name}" }
   end
 
   def trains
@@ -146,52 +151,34 @@ class Menu
     @routes.each.with_index(1) { |route, index| puts "#{index}. #{route.stations}" }
   end
 
-  def choose_station
+  def trains_on_station
     station = input_station
-    if station <= @stations.size && station.positive?
-      puts @stations[station - 1].trains.to_s
-    else
-      wrong_input
-    end
-  end
-
-  def wrong_input
-    puts 'Вы ввели некорректное значение.'
-    menu
+    # проверить работает ли следующая строчка
+    puts station.trains.each(&:number)
   end
 
   def create_route
-    stations
-    route = []
-    puts 'Введите начальную и конечную станцию'
-    2.times do
-      route << gets.chomp.to_i
-    end
-    start_station, last_station = route
-    if start_station <= @stations.size && start_station.positive? && last_station <= @stations.size && last_station.positive? && start_station != last_station
-      @routes << Route.new(@stations[start_station - 1], @stations[last_station - 1])
-      routes
-    else
-      wrong_input
-    end
+    puts 'Начальная станция маршрута'
+    start_station = input_station
+    puts 'Конечная станция маршрута'
+    last_station = input_station
+    wrong_input if start_station == last_station
+    @routes << Route.new(start_station, last_station)
+    routes
   end
 
   def change_station_in_route
     route = input_route
     station = input_station
-    if route <= @routes.size && route.positive? && station <= @stations.size && station.positive?
-      puts 'Что сделать со станцией?
+    puts 'Что сделать со станцией?
       1. Добавить станцию
       2. Удалить станцию'
-      decision = gets.chomp
-      case decision
-      when '1'
-        @routes[route - 1].add_station(@stations[station - 1])
-      when '2'
-        @routes[route - 1].del_station(@stations[station - 1])
-      else
-        wrong_input
-      end
+    decision = gets.chomp
+    case decision
+    when '1'
+      route.add_station(station)
+    when '2'
+      route.del_station(station)
     else
       wrong_input
     end
@@ -200,53 +187,53 @@ class Menu
   def assign_route
     train = input_train
     route = input_route
-    if train <= @trains.size && train.positive? && route <= @routes.size && route.positive?
-      @trains[train - 1].route = (@routes[route - 1])
-      routes
-    else
-      wrong_input
-    end
+    train.route = route
+    puts "Поезд #{train.number} находится на маршруте #{route.stations.each { |station| puts station.name }}"
   end
 
   def input_train
     trains
     puts 'Выберите поезд'
-    gets.chomp.to_i
+    train_index = gets.chomp.to_i
+    wrong_input if train_index > @trains.size || train_index.negative?
+    @trains[train_index - 1]
   end
 
   def input_carriage
     carriages
     puts 'Выберите вагон'
-    gets.chomp.to_i
+    carriage_index = gets.chomp.to_i
+    wrong_input if carriage_index > @carriages.size || carriage_index.negative?
+    @carriages[carriage_index - 1]
   end
 
   def input_route
     routes
     puts 'Выберите маршрут'
-    gets.chomp.to_i
+    route_index = gets.chomp.to_i
+    wrong_input if route_index > @routes.size || route_index.negative?
+    @routes[route_index - 1]
   end
 
   def input_station
     stations
     puts 'Выберите станцию'
-    gets.chomp.to_i
+    station_index = gets.chomp.to_i
+    wrong_input if station_index > @stations.size || station_index.negative?
+    @stations[station_index - 1]
   end
 
   def move_train
     train = input_train
-    if train <= @trains.size && train.positive?
-      puts 'Выберите направление
+    puts 'Выберите направление
             1. Вперед
             2. Назад'
-      choice = gets.chomp
-      case choice
-      when '1'
-        @trains[train - 1].move_next_station
-      when '2'
-        @trains[train - 1].move_previous_station
-      else
-        wrong_input
-      end
+    choice = gets.chomp
+    case choice
+    when '1'
+      train.move_next_station
+    when '2'
+      train.move_previous_station
     else
       wrong_input
     end
@@ -255,20 +242,15 @@ class Menu
   def change_carriage
     train = input_train
     carriage = input_carriage
-    wrong_input if ''.include?(carriage.to_s)
-    if train <= @trains.size && train.positive? && carriage <= @carriages.size && carriage.positive?
-      puts 'Выберите действие:
+    puts 'Выберите действие:
             1. Присоединить вагон
             2. Отсоединить вагон'
-      choice = gets.chomp
-      case choice
-      when '1'
-        @trains[train - 1].attach_carriage(@carriages[carriage - 1])
-      when '2'
-        @trains[train - 1].detach_carriage(@carriages[carriage - 1])
-      else
-        wrong_input
-      end
+    choice = gets.chomp
+    case choice
+    when '1'
+      train.attach_carriage(carriage)
+    when '2'
+      train.detach_carriage(carriage)
     else
       wrong_input
     end
