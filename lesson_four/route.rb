@@ -8,11 +8,19 @@ class Route
   end
 
   def add_station(station)
-    @middle_stations << station unless @middle_stations.include?(station)
+    if stations.include?(station)
+      puts 'Такая станция уже присутсвует в маршруте'
+    else
+      @middle_stations << station
+    end
   end
 
   def del_station(station)
-    @middle_stations.delete(station) if @middle_stations.include?(station)
+    if stations.include?(station)
+      @middle_stations.delete(station)
+    else
+      puts 'Такой станции нет в маршруте'
+    end
   end
 
   def stations

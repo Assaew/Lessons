@@ -159,7 +159,7 @@ class Menu
   def routes
     puts 'Список маршрутов:'
     @routes.each.with_index(1) do |route, index|
-      puts "#{index}. #{stations_output(route).join(', ')}"
+      puts "#{index}. #{stiled_route(route)}"
     end
   end
 
@@ -167,14 +167,6 @@ class Menu
     station = input_station
     puts "Поезда на станции #{station.name}:"
     station.trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number}" }
-  end
-
-  def stations_output(route)
-    stations_array = []
-    route.stations.each do |station|
-      stations_array << station.name
-    end
-    stations_array
   end
 
   def change_station_in_route
@@ -192,14 +184,18 @@ class Menu
     else
       wrong_input
     end
-    routes
+    puts "Маршрут изменился на: #{stiled_route(route)}"
   end
 
   def assign_route
     train = input_train
     route = input_route
     train.route = route
-    puts "Поезд #{train.number} находится на маршруте #{stations_output(route).join(', ')}"
+    puts "Поезд #{train.number} находится на маршруте #{stiled_route(route)}"
+  end
+
+  def stiled_route(route)
+    route.stations.map{|station| station.name}.join(', ')
   end
 
   def input_train
