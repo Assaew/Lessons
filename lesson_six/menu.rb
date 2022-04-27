@@ -1,5 +1,6 @@
 require_relative 'company'
 require_relative 'instancecounter'
+require_relative 'validate'
 require_relative 'route'
 require_relative 'station'
 require_relative 'train'
@@ -269,12 +270,3 @@ class Menu
     trains
   end
 end
-
-#   - Создавать станции +
-#   - Создавать поезда +
-#   - Создавать маршруты и управлять станциями в нем (добавлять, удалять) +
-#   - Назначать маршрут поезду +
-#   - Добавлять вагоны к поезду +
-#   - Отцеплять вагоны от поезда +
-#   - Перемещать поезд по маршруту вперед и назад +
-#   - Просматривать список станций и список поездов на станции +

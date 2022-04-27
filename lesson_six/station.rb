@@ -1,6 +1,9 @@
 class Station
   include InstanceCounter
+  include Validate
   attr_reader :trains, :name
+
+  NAME_FORMAT = /^\w+$/
 
   @@stations = []
 
@@ -9,6 +12,7 @@ class Station
     @trains = []
     @@stations << self
     register_instance
+    validate!
   end
 
   def self.all
@@ -23,9 +27,12 @@ class Station
     @trains.delete(train) if @trains.include?(train)
   end
 
-  # def train_list_type(type)
-  #   found_trains = @trains.find_all {|train| train.type == type}
-  #   puts "Количество #{type} поездов: #{found_trains.length}."
-  #   found_trains
-  # end
+  protected
+
+  def validate!
+    raise 'Номер не может быть пустым' if name.nil?
+    raise 'Допустимый формат: буквы, цифры и _' if name !~ NAME_FORMAT
+
+    true
+  end
 end

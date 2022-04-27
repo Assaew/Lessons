@@ -1,16 +1,16 @@
 class Train
   include Company
   include InstanceCounter
-  attr_reader :current_speed, :carriages, :type, :number
+  include Validate
+  attr_reader :current_speed, :carriages, :type
+  attr_accessor :number
 
+  NUMBER_FORMAT = /^[a-zA-Z0-9]{3}-*[a-zA-Z0-9]{2}$/
+  TYPES = %i[cargo passenger]
   @@trains = {}
 
   def self.find(number)
-    if @@trains.include?(number)
-    @@trains[number]
-    else
-      nil
-    end
+    @@trains[number] if @@trains.include?(number)
   end
 
   def initialize(number, type)
@@ -20,6 +20,7 @@ class Train
     @carriages = []
     @@trains[number] = self
     register_instance
+    validate!
   end
 
   def increase_speed
@@ -76,7 +77,16 @@ class Train
     @current_station_index -= 1
   end
 
-  private # Нужны только для логики перемещения на следующую и предыдущую станцию. Пользователю не нужен доступ к ним.
+  protected # Нужны только для логики перемещения на следующую и предыдущую станцию. Пользователю не нужен доступ к ним.
+
+  def validate!
+    raise 'Номер не может быть пустым' if number.nil?
+    raise 'Тип не может быть пустым' if type.nil?
+    raise 'Допустимый формат: три буквы или цифры необязательный дефис 2 буквы или цифры' if number !~ NUMBER_FORMAT
+    raise 'Тип неправильного формата' unless TYPES.include?(type)
+
+    true
+  end
 
   def wrong_carriage_type?(carriage)
     carriage.type != type || @current_speed != 0
