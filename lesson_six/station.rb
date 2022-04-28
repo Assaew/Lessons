@@ -31,7 +31,7 @@ class Station
 
   def validate!
     raise ValidationError, 'Номер не может быть пустым' if name.nil?
-    raise ValidationError, 'Допустимый формат: буквы, цифры и _' if name !~ NAME_FORMAT
+    raise ValidationError, 'Недопустимый формат. Латинские буквы, цифры и _' if name !~ NAME_FORMAT
 
     true
   end

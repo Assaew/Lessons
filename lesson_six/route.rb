@@ -1,5 +1,7 @@
 class Route
   include InstanceCounter
+  include Validatable
+
   attr_reader :start_station, :last_station, :middle_stations
 
   def initialize(start_station, last_station)
@@ -7,6 +9,7 @@ class Route
     @last_station = last_station
     @middle_stations = []
     register_instance
+    validate!
   end
 
   def add_station(station)
@@ -31,5 +34,13 @@ class Route
 
   def show
     puts (stations.each { |station| puts station.name }).to_s
+  end
+
+  def validate!
+    if @start_station.class != Station || @last_station.class != Station
+      raise ValidationError, 'Недопустимый ввод. Укажите пожалуйста станцию'
+
+      true
+    end
   end
 end

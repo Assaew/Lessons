@@ -11,8 +11,6 @@ require_relative 'carriage'
 require_relative 'cargo_carriage'
 require_relative 'passenger_carriage'
 
-
-
 class Menu
   def initialize
     @stations = []
@@ -39,42 +37,47 @@ class Menu
         13.Список вагонов
         14.Выход'
       enter = gets.chomp
-      if ['exit', 'stop', ''].include?(enter)
-        puts 'До скорой встречи!'
-        exit
-      end
-      case enter
-      when '1'
-        create_station
-      when '2'
-        stations
-      when '3'
-        create_train
-      when '4'
-        trains_on_station
-      when '5'
-        create_route
-      when '6'
-        routes
-      when '7'
-        change_station_in_route
-      when '8'
-        assign_route
-      when '9'
-        move_train
-      when '10'
-        trains
-      when '11'
-        create_carriage
-      when '12'
-        change_carriage
-      when '13'
-        carriages
-      when '14'
-        puts 'До скорой встречи!'
-        exit
-      else
-        wrong_input
+      # if ['exit', 'stop', ''].include?(enter)
+      #   puts 'До скорой встречи!'
+      #   exit
+      # end
+      begin
+        case enter
+        when '1'
+          create_station
+        when '2'
+          stations
+        when '3'
+          create_train
+        when '4'
+          trains_on_station
+        when '5'
+          create_route
+        when '6'
+          routes
+        when '7'
+          change_station_in_route
+        when '8'
+          assign_route
+        when '9'
+          move_train
+        when '10'
+          trains
+        when '11'
+          create_carriage
+        when '12'
+          change_carriage
+        when '13'
+          carriages
+        when '14'
+          puts 'До скорой встречи!'
+          exit
+        else
+          wrong_input
+        end
+      rescue ValidationError => e
+        puts e.message.to_s
+        menu
       end
     end
   end
@@ -92,6 +95,7 @@ class Menu
       station = gets.chomp
       menu if ['stop', ''].include?(station)
       @stations << Station.new(station)
+      stations
     end
   end
 
@@ -115,6 +119,7 @@ class Menu
       else
         wrong_input
       end
+      trains
     end
   end
 
@@ -135,6 +140,7 @@ class Menu
       else
         wrong_input
       end
+      carriages
     end
   end
 
@@ -155,7 +161,9 @@ class Menu
 
   def trains
     puts 'Список поездов:'
-    @trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number}-#{train.type} (#{train.carriages.size})" }
+    @trains.each.with_index(1) do |train, index|
+      puts "#{index}. #{train.number}-#{train.type} (#{train.carriages.size})"
+    end
   end
 
   def carriages
@@ -202,7 +210,7 @@ class Menu
   end
 
   def stiled_route(route)
-    route.stations.map{|station| station.name}.join(', ')
+    route.stations.map { |station| station.name }.join(', ')
   end
 
   def input_train
@@ -251,6 +259,7 @@ class Menu
     else
       wrong_input
     end
+    puts "Поезд #{train.number} переместился на станцию #{train.current_station.name}"
   end
 
   def change_carriage
