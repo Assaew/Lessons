@@ -37,10 +37,8 @@ class Route
   end
 
   def validate!
-    if @start_station.class != Station || @last_station.class != Station
-      raise ValidationError, 'Недопустимый ввод. Укажите пожалуйста станцию'
+    return true if stations.map(&:is_a?).all?
 
-      true
-    end
+    raise ValidationError, 'Недопустимый ввод. Укажите пожалуйста станцию'
   end
 end
