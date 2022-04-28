@@ -1,6 +1,6 @@
 class Station
   include InstanceCounter
-  include Validate
+  include Validatable
   attr_reader :trains, :name
 
   NAME_FORMAT = /^\w+$/
@@ -30,8 +30,8 @@ class Station
   protected
 
   def validate!
-    raise 'Номер не может быть пустым' if name.nil?
-    raise 'Допустимый формат: буквы, цифры и _' if name !~ NAME_FORMAT
+    raise ValidationError, 'Номер не может быть пустым' if name.nil?
+    raise ValidationError, 'Допустимый формат: буквы, цифры и _' if name !~ NAME_FORMAT
 
     true
   end

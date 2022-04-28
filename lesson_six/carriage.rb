@@ -1,6 +1,6 @@
 class Carriage
   include Company
-  include Validate
+  include Validatable
   attr_reader :type
 
   TYPES = %i[cargo passenger]
@@ -13,8 +13,8 @@ class Carriage
   protected
 
   def validate!
-    raise 'Тип не может быть пустым' if type.nil?
-    raise 'Тип неправильного формата' unless TYPES.include?(type)
+    raise ValidationError, 'Тип не может быть пустым' if type.nil?
+    raise ValidationError, 'Тип неправильного формата' unless TYPES.include?(type)
 
     true
   end

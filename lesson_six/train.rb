@@ -1,7 +1,7 @@
 class Train
   include Company
   include InstanceCounter
-  include Validate
+  include Validatable
   attr_reader :current_speed, :carriages, :type
   attr_accessor :number
 
@@ -80,10 +80,10 @@ class Train
   protected # Нужны только для логики перемещения на следующую и предыдущую станцию. Пользователю не нужен доступ к ним.
 
   def validate!
-    raise 'Номер не может быть пустым' if number.nil?
-    raise 'Тип не может быть пустым' if type.nil?
-    raise 'Допустимый формат: три буквы или цифры необязательный дефис 2 буквы или цифры' if number !~ NUMBER_FORMAT
-    raise 'Тип неправильного формата' unless TYPES.include?(type)
+    raise ValidationError, 'Номер не может быть пустым' if number.nil?
+    raise ValidationError, 'Тип не может быть пустым' if type.nil?
+    raise ValidationError, 'Допустимый формат: три буквы или цифры необязательный дефис 2 буквы или цифры' if number !~ NUMBER_FORMAT
+    raise ValidationError, 'Тип неправильного формата' unless TYPES.include?(type)
 
     true
   end
