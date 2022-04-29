@@ -27,6 +27,10 @@ class Station
     @trains.delete(train) if @trains.include?(train)
   end
 
+  def trains_block(&block)
+    @trains.each.with_index(1) { |train, index| block.call(train, index) }
+  end
+
   protected
 
   def validate!

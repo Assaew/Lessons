@@ -23,6 +23,10 @@ class Train
     validate!
   end
 
+  def carriages_block(&block)
+    @carriages.each.with_index(1) { |carriage, index| block.call(carriage, index) }
+  end
+
   def increase_speed
     @current_speed += 1
   end

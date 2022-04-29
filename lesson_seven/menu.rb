@@ -35,12 +35,10 @@ class Menu
         11.Создать вагон
         12.Прицепить/отцепить вагон
         13.Список вагонов
-        14.Выход'
+        14.Список вагонов поезда
+        15.Наполнить вагон
+        16.Выход'
       enter = gets.chomp
-      # if ['exit', 'stop', ''].include?(enter)
-      #   puts 'До скорой встречи!'
-      #   exit
-      # end
       begin
         case enter
         when '1'
@@ -70,6 +68,10 @@ class Menu
         when '13'
           carriages
         when '14'
+          carriages_of_train
+        when '15'
+          fill_carriage
+        when '16'
           puts 'До скорой встречи!'
           exit
         else
@@ -83,6 +85,18 @@ class Menu
   end
 
   private
+
+  def fill_carriage
+    carriage = input_carriage
+    if carriage.type == :cargo
+      puts 'Укажите заполняемый объем'
+      carriage.increase_volume = gets.chomp.to_i
+      puts "Теперь в вагоне: #{carriage.taken_volume} л."
+    else
+      carriage.take_a_seat
+      puts "Занятых мест в вагоне: #{carriage.taken_seats}."
+    end
+  end
 
   def wrong_input
     puts 'Вы ввели некорректное значение.'
@@ -132,9 +146,11 @@ class Menu
       type = gets.chomp
       case type
       when '1'
-        @carriages << PassengerCarriage.new
+        puts 'Введите количесво мест в вагоне'
+        @carriages << PassengerCarriage.new(gets.chomp.to_i)
       when '2'
-        @carriages << CargoCarriage.new
+        puts 'Введите максимальный объем вагона'
+        @carriages << CargoCarriage.new(gets.chomp.to_i)
       when '3'
         menu
       else
@@ -168,7 +184,13 @@ class Menu
 
   def carriages
     puts 'Список вагонов:'
-    @carriages.each.with_index(1) { |carriage, index| puts "#{index}. #{carriage.type}" }
+    @carriages.each.with_index(1) do |carriage, index|
+      if carriage.type == :cargo
+        puts "#{index}. #{carriage.type}[Заполено (л):#{carriage.taken_volume} из #{carriage.volume}]"
+      else
+        puts "#{index}. #{carriage.type}[Занято мест:#{carriage.taken_seats} из #{carriage.seats}]"
+      end
+    end
   end
 
   def routes
@@ -180,8 +202,20 @@ class Menu
 
   def trains_on_station
     station = input_station
+    block = ->(train, index) { puts "#{index}. #{train.number}" }
     puts "Поезда на станции #{station.name}:"
-    station.trains.each.with_index(1) { |train, index| puts "#{index}. #{train.number}" }
+    station.trains_block(&block)
+  end
+
+  def carriages_of_train
+    train = input_train
+    block = if train.type == :cargo
+              ->(carriage, index) { puts "#{index}. Грузовой. Объем:#{carriage.volume}" }
+            else
+              ->(carriage, index) { puts "#{index}. Пассажирский. Мест:#{carriage.seats}" }
+            end
+    puts "Вагоны поезда #{train.number}:"
+    train.carriages_block(&block)
   end
 
   def change_station_in_route
