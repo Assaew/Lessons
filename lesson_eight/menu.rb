@@ -302,7 +302,7 @@ class Menu
     puts 'Выберите действие:
             1. Присоединить вагон
             2. Отсоединить вагон'
-    choice = gets.chomp.to_s
+    choice = gets.chomp
     case choice
     when '1'
       train.attach_carriage(carriage)
