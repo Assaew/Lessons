@@ -240,11 +240,11 @@ class Menu
     train = input_train
     route = input_route
     train.route = route
-    puts "Поезд #{train.number} находится на маршруте #{stiled_route(route)}"
+    puts "Поезд #{train.number} находится на маршруте: #{stiled_route(route)}"
   end
 
   def stiled_route(route)
-    route.stations.map { |station| station.name }.join(', ')
+    route.stations.map(&:name).join(', ')
   end
 
   def input_train
@@ -302,7 +302,7 @@ class Menu
     puts 'Выберите действие:
             1. Присоединить вагон
             2. Отсоединить вагон'
-    choice = gets.chomp
+    choice = gets.chomp.to_s
     case choice
     when '1'
       train.attach_carriage(carriage)

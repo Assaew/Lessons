@@ -14,7 +14,7 @@ class Route
 
   def add_station(station)
     if stations.include?(station)
-      puts 'Такая станция уже присутсвует в маршруте'
+    puts 'Такая станция уже присутсвует в маршруте'
     else
       @middle_stations << station
     end
@@ -32,12 +32,8 @@ class Route
     [@start_station, @middle_stations, @last_station].flatten
   end
 
-  def show
-    puts (stations.each { |station| puts station.name }).to_s
-  end
-
   def validate!
-    return true if stations.map { |station| station.is_a?(Station) }.all?
+    return true unless stations.any? { |station| station.class != Station }
 
     raise ValidationError, 'Недопустимый ввод. Укажите пожалуйста станцию'
   end

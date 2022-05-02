@@ -8,7 +8,7 @@ class Station
   @@stations = []
 
   def initialize(name)
-    @name = name
+    @name = name.capitalize
     @trains = []
     @@stations << self
     register_instance
