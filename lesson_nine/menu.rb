@@ -1,6 +1,8 @@
 require_relative 'company'
+require_relative 'accessors'
 require_relative 'instancecounter'
-require_relative 'validatable'
+# require_relative 'validatable'
+require_relative 'validation'
 require_relative 'validation_error'
 require_relative 'route'
 require_relative 'station'
@@ -10,6 +12,7 @@ require_relative 'cargo_train'
 require_relative 'carriage'
 require_relative 'cargo_carriage'
 require_relative 'passenger_carriage'
+
 
 class Menu
   def initialize

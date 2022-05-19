@@ -1,9 +1,15 @@
 class Train
   include Company
   include InstanceCounter
-  include Validatable
+  # include Validatable
+  extend Accessors
+  extend Validation
   attr_reader :current_speed, :carriages, :type
   attr_accessor :number
+
+  validate :number, :format, :NUMBER_FORMAT
+  validate :number, :presence
+  validate :number, :type, String
 
   NUMBER_FORMAT = /^[a-zA-Z0-9]{3}-*[a-zA-Z0-9]{2}$/
   TYPES = %i[cargo passenger]
@@ -20,7 +26,6 @@ class Train
     @carriages = []
     @@trains[number] = self
     register_instance
-    validate!
   end
 
   def carriages_block(&block)
@@ -83,18 +88,18 @@ class Train
 
   protected # Нужны только для логики перемещения на следующую и предыдущую станцию. Пользователю не нужен доступ к ним.
 
-  def validate!
-    raise ValidationError, 'Номер не может быть пустым' if number.nil?
-    raise ValidationError, 'Тип не может быть пустым' if type.nil?
-
-    if number !~ NUMBER_FORMAT
-      raise ValidationError,
-            'Недопустимый формат. Tри буквы или цифры, необязательный дефис, 2 буквы или цифры'
-    end
-    raise ValidationError, 'Тип неправильного формата' unless TYPES.include?(type)
-
-    true
-  end
+  # def validate!
+  #   raise ValidationError, 'Номер не может быть пустым' if number.nil?
+  #   raise ValidationError, 'Тип не может быть пустым' if type.nil?
+  #
+  #   if number !~ NUMBER_FORMAT
+  #     raise ValidationError,
+  #           'Недопустимый формат. Tри буквы или цифры, необязательный дефис, 2 буквы или цифры'
+  #   end
+  #   raise ValidationError, 'Тип неправильного формата' unless TYPES.include?(type)
+  #
+  #   true
+  # end
 
   def wrong_carriage_type?(carriage)
     carriage.type != type || @current_speed != 0
