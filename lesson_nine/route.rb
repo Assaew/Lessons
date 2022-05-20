@@ -1,6 +1,9 @@
 class Route
   include InstanceCounter
-  # include Validatable
+  include Validation
+
+  validate :start_station, :type, 'Station'
+  validate :last_station, :type, 'Station'
 
   attr_reader :start_station, :last_station, :middle_stations
 
@@ -8,8 +11,8 @@ class Route
     @start_station = start_station
     @last_station = last_station
     @middle_stations = []
+    validate!
     register_instance
-    # validate!
   end
 
   def add_station(station)

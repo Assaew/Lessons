@@ -1,18 +1,22 @@
 class Station
   include InstanceCounter
-  # include Validatable
+  include Validation
   attr_reader :trains, :name
 
   NAME_FORMAT = /^\w+$/
 
+  validate :name, :format, NAME_FORMAT
+  validate :name, :presence
+  validate :name, :type, 'String'
+
   @@stations = []
 
   def initialize(name)
-    @name = name.capitalize
+    @name = name
     @trains = []
     @@stations << self
+    validate!
     register_instance
-    # validate!
   end
 
   def self.all

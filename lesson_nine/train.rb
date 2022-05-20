@@ -1,17 +1,17 @@
 class Train
   include Company
   include InstanceCounter
-  # include Validatable
   extend Accessors
-  extend Validation
+  include Validation
+  NUMBER_FORMAT = /^[a-zA-Z0-9]{3}-*[a-zA-Z0-9]{2}$/
   attr_reader :current_speed, :carriages, :type
   attr_accessor :number
 
-  validate :number, :format, :NUMBER_FORMAT
+  validate :number, :format, NUMBER_FORMAT
   validate :number, :presence
-  validate :number, :type, String
+  validate :number, :type, 'String'
 
-  NUMBER_FORMAT = /^[a-zA-Z0-9]{3}-*[a-zA-Z0-9]{2}$/
+
   TYPES = %i[cargo passenger]
   @@trains = {}
 
@@ -25,6 +25,7 @@ class Train
     @type = type
     @carriages = []
     @@trains[number] = self
+    validate!
     register_instance
   end
 

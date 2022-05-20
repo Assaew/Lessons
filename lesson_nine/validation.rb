@@ -1,32 +1,50 @@
 module Validation
-  def validate(name, *args)
-    variable = instance_variable_get("@#{name}")
-    case args[0]
-    when :presence
-      define_method(validate!) do
-        raise ValidationError, 'Имя не может быть пустым' if variable.nil? || variable == ''
+  def self.included(base)
+    base.extend ClassMethods
+    base.include InstanceMethods
+  end
 
-        true
-      end
-    when :format
-      define_method(validate!) do
-        raise ValidationError, 'Имя не соотвествует формату' if variable !~ args[1]
+  module ClassMethods
+    def validate(name, validation_type, *validation_args)
+      @validations ||= {}
+      validations[name] ||= []
+      validations[name] << { type: validation_type, args: validation_args.first }
+      define_method(:validations) { self.class.instance_variable_get('@validations') }
+    end
+    attr_reader :validations
+  end
 
-        true
-      end
-    when :type
-      define_method(validate!) do
-        raise ValidationError, 'Тип неправильного формата' unless variable.instance_of?(args[1])
+  module InstanceMethods
+    def validate!
+      return false unless validations
 
-        true
+      validations.each do |name, args|
+        args.each do |validation|
+          validation_type = validation[:type]
+          validation_option = validation[:args]
+          send("validate_#{validation_type}", name, instance_variable_get("@#{name}"), validation_option)
+        end
       end
-    else raise 'Тип валидации указан неверно'
     end
 
-    define_method(valid?) do
+    def validate_presence(name, value, _parameter)
+      raise ValidationError, "Не может быть пустым, проверь #{name}" if value.is_a?(String) && value.empty?
+    end
+
+    def validate_format(name, value, format)
+      raise ValidationError, "Неверный формат, проверь #{name}" if value !~ format
+    end
+
+    def validate_type(name, value, type)
+      raise ValidationError, "Неверный тип, проверь #{name}" unless value.is_a?(Object.const_get type)
+    end
+
+    def valid?
       validate!
-    rescue ValidationError
+      true
+    rescue ValidationError => e
       false
+      puts e
     end
   end
 end
